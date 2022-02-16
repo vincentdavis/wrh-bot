@@ -1,5 +1,5 @@
 #!/bin/bash
-git https://github.com/we-race-here/wrh-bot.git /home/jenkins/wrh-bot
+git clone https://github.com/we-race-here/wrh-bot.git /home/jenkins/wrh-bot
 cd /home/jenkins/wrh-bot
 git checkout main
 mkdir -p media
