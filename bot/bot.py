@@ -3,7 +3,7 @@ import logging
 from discord.ext import commands
 
 
-class WhoisBot(commands.Bot):
+class BasicCommandBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = kwargs.pop('logger', None) or logging.getLogger('ZwiftBot')

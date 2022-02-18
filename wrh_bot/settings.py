@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whois'
+    'whois', # Bot
+    'zwift'  # Bot
 ]
 
 MIDDLEWARE = [
@@ -128,4 +129,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-DISCORD_TOKEN = env('DISCORD_TOKEN')
+DISCORD_TOKEN_WHOIS = env('DISCORD_TOKEN_WHOIS')
+DISCORD_TOKEN_ZWIFT = env('DISCORD_TOKEN_ZWIFT')

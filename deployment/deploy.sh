@@ -18,5 +18,6 @@ sudo /etc/init.d/nginx start || sudo /etc/init.d/nginx start
 #celery -A zp_result worker -l info &
 #celery -A zp_result beat &
 python manage.py whois_bot_start &
+python manage.py zwift_bot &
 # Running Server
 uwsgi --socket mysite.sock --module wrh_bot.wsgi --buffer-size=100000 --chmod-socket=666 --master --processes 4 --threads 2
