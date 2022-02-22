@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<template>
+    <v-app id="inspire">
+        <v-app-bar app color="white" flat>
+            <v-container class="py-0 fill-height">
+                <v-icon color="primary">mdi-discord</v-icon>
+                Discord Bot - We Race Here
+
+                <v-btn v-for="link in links" :key="link" text>
+                    {{ link }}
+                </v-btn>
+                <v-spacer></v-spacer>
+                <!-- <v-btn small color="primary">logout</v-btn> -->
+
+            </v-container>
+        </v-app-bar>
+
+        <v-main class="grey lighten-3">
+            <v-container>
+                <v-row>
+
+
+                    <v-col>
+
+                        <v-card>
+                            <v-tabs vertical v-model="tabs">
+                                <v-tab>
+
+                                    How To Register ?
+                                </v-tab>
+                                <v-tab>
+                                    <v-icon left  color="primary">mdi-discord</v-icon>
+                                     Discords Servers
+                                </v-tab>
+                                <!-- <v-tab>
+                                    <v-icon left  color="primary">mdi-cog-box</v-icon>
+
+                                    
+                                    Config
+                                </v-tab> -->
+
+                                <v-tab-item>
+                                    <v-card flat>
+                                        <v-card-text>
+                                            <ol>
+                                                <li>Authorize the bot <v-icon  color="primary">mdi-discord</v-icon> <a target="__blank__" :href="BotLink">Authorize</a>
+                                                </li>
+                                                <li>
+                                                    Run this bot command in a connected discord server(be sure you have administrator role):
+                                                    <v-text-field readonly :value="testingCode"></v-text-field>
+                                                    <!-- <v-btn @click="copyTestingCode" color="primary" small>Copy</v-btn> -->
+                                                    
+                                                </li>  
+                                            </li>
+                                            </ol>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-tab-item>
+                                <v-tab-item>
+                                    <v-card flat>
+                                        <v-card-text>
+                                          <v-data-table
+                                            :headers="
+                                            [
+                                            {'text': 'Server Name', 'value':'guild_name'},
+                                            {'text': 'Team ID', 'value':'team_id'},
+                                            {'text': 'Team Result Channel', 'value':'team_result_channel'},
+                                            ]"
+                                            :items="WRHDiscordServers"
+                                            >
+                                            <template v-slot:item.team_id="{ item }">
+                                                <v-text-field label="Team ID" dense v-model="item.team_id" hide-details></v-text-field>
+                                              </template>
+                                              <template v-slot:item.team_result_channel="{ item }">
+                                                <v-text-field label="Team Result Channel Name" dense v-model="item.team_result_channel" hide-details></v-text-field>
+                                              </template>
+                                            </v-data-table>
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn small color="primary" @click="SaveDiscordServerChanges">Save</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-tab-item>
+                                <v-tab-item>
+                                    <v-card flat>
+                                        <v-card-text>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-text-field label='Team Id'></v-text-field>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card-text>
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn small color="primary">Save</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-tab-item>
+                            </v-tabs>
+                        </v-card>
+
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-main>
+    </v-app>
+</template>
+
+
+
+{% endblock %}

@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from bot.utils import to_dict
 from whois import admin
-from whois.models import WRHDiscordMap
+from whois.models import WRHDiscordMap, WRHDiscordServers
 ZWIFT_EVENT_URL = "https://zwiftpower.com/events.php?zid={zid}"
 ZWIFT_LOGO_URL = "https://zwiftpower.com/zp_logo.png"
 ZWIFT_PROFILE_URL = "https://www.zwiftpower.com/profile.php?z={zwid}"
@@ -28,6 +28,16 @@ class WhoisCog(commands.Cog, name='We Race Here player commands'):
         if ctx.invoked_subcommand is None:
             await ctx.send('```fix\nInvalid zw admin command passed!\ntype "!zw help admin" command for more info\n```')
 
+    @admin.command(help='connect current guild to a discordbots.weracehere.org')
+    async def connect(self, ctx):
+        guild_id = ctx.guild.id
+        guild_name = ctx.message.guild.name
+        print(guild_id)
+        obj, _ = await sync_to_async(WRHDiscordServers.objects.update_or_create)(guild_id=guild_id,guild_name=guild_name)
+        desc = f'**{guild_name}** connected to  discordbots.weracehere.org.'
+        embed = discord.Embed(description=desc)
+
+        await ctx.send(embed=embed)
     @commands.guild_only()
     @commands.command(help='assign a zwift id to your discord account!')
     async def set(self, ctx, zwid: int):
@@ -36,6 +46,7 @@ class WhoisCog(commands.Cog, name='We Race Here player commands'):
     async def _set(self, ctx, zwid: int, member: discord.Member = None):
         user_id = (member or ctx.author).id
         guild_id = ctx.guild.id
+        print(guild_id)
         obj, _ = await sync_to_async(WRHDiscordMap.objects.update_or_create)(
             defaults={'zwift_id': zwid}, discord_id=user_id, guild_id=guild_id)
         desc = f'**{zwid}** zwift id assigned to {obj.discord_mention}.'

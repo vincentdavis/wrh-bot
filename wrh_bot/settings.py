@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'whois', # Bot
-    'zwift'  # Bot
+    'zwift',  # Bot,
+    'admin_site'
 ]
 
 MIDDLEWARE = [
@@ -81,8 +83,12 @@ WSGI_APPLICATION = 'wrh_bot.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('NAME'),
+        'HOST': env('HOST'),
+        'PORT': env('PORT'),
+        'USER': env('USERDB'),
+        'PASSWORD': env('PASSWORD'),
     }
 }
 
@@ -131,3 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DISCORD_TOKEN_WHOIS = env('DISCORD_TOKEN_WHOIS')
 DISCORD_TOKEN_ZWIFT = env('DISCORD_TOKEN_ZWIFT')
+BotLink = env('BotLink')
+
+ZWIFTPOWER_USERNAME=env('ZWIFTPOWER_USERNAME')
+ZWIFTPOWER_PASSWORD=env('ZWIFTPOWER_PASSWORD')
+ZWIFT_POWER_LOGIN_URL = 'https://zwiftpower.com/ucp.php?mode=login'

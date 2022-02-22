@@ -18,11 +18,16 @@ import time
 
 from django.contrib import admin
 from django.http import JsonResponse
-from django.urls import path
+from django.template.defaulttags import url
+from django.urls import path, include
+
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('admin_site.urls')),
+    path('', include('whois.urls')),
 ]
 
 

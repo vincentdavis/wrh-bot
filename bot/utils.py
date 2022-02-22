@@ -1,6 +1,12 @@
 import datetime
 import decimal
 import inspect
+import json
+from urllib.parse import urlparse
+
+import aiohttp
+
+from wrh_bot.settings import ZWIFTPOWER_USERNAME, ZWIFTPOWER_PASSWORD, ZWIFT_POWER_LOGIN_URL
 
 
 def to_dict(obj, fields=None, fields_map=None, extra_fields=None):
@@ -43,4 +49,27 @@ def to_dict(obj, fields=None, fields_map=None, extra_fields=None):
         else:
             data[field] = v
 
+    return data
+
+
+async def zwift_power_get_api_async(url):
+    p = urlparse(url)
+    data = {}
+    login_data = {
+        'username': ZWIFTPOWER_USERNAME, 'password': ZWIFTPOWER_PASSWORD,
+        'login': 'Login'
+    }
+
+    # this is strange! but this is required to have a user-agent header for fetching above url
+    async with aiohttp.ClientSession() as session:
+        async with session.get(ZWIFT_POWER_LOGIN_URL, headers={"User-Agent": "Requests Agent"}) as res:
+            login_data['sid'] = res.cookies.get('phpbb3_lswlk_sid').value
+
+        async with session.post(ZWIFT_POWER_LOGIN_URL, data=login_data, headers={"User-Agent": "Requests Agent"}) as res:
+            await res.text()
+
+        async with session.get(url, headers={"User-Agent": "Requests Agent"}) as res:
+            text = await res.json()
+
+    data = text
     return data

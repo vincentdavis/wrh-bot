@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+{{WRHDiscordServers |json_script:"WRHDiscordServers"}}
+{{BotLink |json_script:"BotLink"}}
+<div id="app">
+    <v-app>
+        <v-main>
+            {% block content %}{% endblock %}
+            <v-snackbar
+            color="green"
+            v-model="snackbar"
+            absolute
+            right
+            shaped
+            top
+            >
+            {text }
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                color="pink"
+                text
+                v-bind="attrs"
+                @click="snackbar = false"
+                >
+                Close
+                </v-btn>
+            </template>
+            </v-snackbar>
+        </v-main>
+    </v-app>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+<script>
+    var WRHDiscordServers = JSON.parse(document.getElementById('WRHDiscordServers').textContent)
+    var BotLink = JSON.parse(document.getElementById('BotLink').textContent)
+    new Vue({
+      el: '#app',
+      delimiters: ['{', '}'],
+      vuetify: new Vuetify(),
+      data(){
+      return{
+      WRHDiscordServers:WRHDiscordServers,
+      BotLink:BotLink,
+      text: 'ad',
+      snackbar: false,
+      links: [
+        'Dashboard',
+        'Messages',
+        'Profile',
+        'Updates',
+      ],
+      tabs: 0,
+      testingCode: "!wrh admin connect",
+      }
+      },
+      methods: {
+        getCookie(name) {
+        if (!document.cookie) {
+            return null;
+        }
+
+        const xsrfCookies = document.cookie.split(';')
+            .map(c => c.trim())
+            .filter(c => c.startsWith(name + '='));
+
+        if (xsrfCookies.length === 0) {
+            return null;
+        }
+        return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+        },
+        SaveDiscordServerChanges(){
+            for (var i of this.WRHDiscordServers){
+                fetch('/WRHDiscordServers/'+i.id+'/', {
+                    method: 'patch', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': this.getCookie('csrftoken')
+                    },                                                             
+                    body: JSON.stringify({
+                        "team_id": i.team_id,
+                        "team_result_channel": i.team_result_channel,
+                    })
+                })
+                .then(response => {
+                    this.text = "Discord Server Updated ..."
+                    this.snackbar = true
+                    // handle the response
+                })
+                .catch(error => {
+                    // handle the error
+                });
+            }
+            
+        }
+    },
+    })
+</script>
+</body>
+</html>

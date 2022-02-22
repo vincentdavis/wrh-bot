@@ -5,6 +5,7 @@ import discord
 from django.core.management import BaseCommand
 from bot.bot import BasicCommandBot
 from whois.cogs.whois_cog import WhoisCog
+from whois.cogs.race_results_cog import RaceResultCog
 from wrh_bot.settings import DISCORD_TOKEN_WHOIS
 
 
@@ -27,6 +28,7 @@ class Command(BaseCommand):
         intents = discord.Intents(messages=True, guilds=True, members=True)
         bot = BasicCommandBot(command_prefix='!wrh ', intents=intents, description='We Race Here Bot for better racing!',logger=logger)
         bot.add_cog(WhoisCog(bot, logger=logger))
+        bot.add_cog(RaceResultCog(bot, logger=logger))
         bot.run(DISCORD_TOKEN_WHOIS)
 
 
