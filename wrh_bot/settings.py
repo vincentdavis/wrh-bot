@@ -142,3 +142,5 @@ BotLink = env('BotLink')
 ZWIFTPOWER_USERNAME=env('ZWIFTPOWER_USERNAME')
 ZWIFTPOWER_PASSWORD=env('ZWIFTPOWER_PASSWORD')
 ZWIFT_POWER_LOGIN_URL = 'https://zwiftpower.com/ucp.php?mode=login'
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8080', 'http://127.0.0.1:8080', 'https://discordbots.weracehere.org']
