@@ -80,8 +80,8 @@
         },
         SaveDiscordServerChanges(){
             for (var i of this.WRHDiscordServers){
-                fetch('https://discordbots.weracehere.org/WRHDiscordServers/'+i.id+'/', {
-                    method: 'patch', 
+                fetch('/WRHDiscordServers/'+i.id+'/', {
+                    method: 'PATCH', 
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': this.getCookie('csrftoken')
