@@ -86,7 +86,6 @@ class RaceResultCog(commands.Cog):
             await channel.send(msg, embed=embed)
 
     async def __send_team_result_by_advanced_filters(self, new_results, guild, advanced_filters, team_id=None,server=None):
-        print('new_results',new_results)
         if not new_results:
             self.logger.info(f'Advanced filter: No new Result on team_id "{team_id}"!')
             return
@@ -160,7 +159,6 @@ class RaceResultCog(commands.Cog):
                 flag = player.pop('flag')
                 f_t = player.pop('f_t')
                 event_date = datetime.datetime.fromtimestamp(timestamp).date()
-                print(event_id, player_id, player_name , event_date, today)
                 if (not last_db_records) or (event_date != today):
                     continue
                 if (last_db_records.get(event_id) or {}).get(player_id) != player:

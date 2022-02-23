@@ -9,8 +9,6 @@ sudo cp -rf ../default.conf  /etc/nginx/sites-available/default
 cp ../.env /home/jenkins/wrh-bot/wrh_bot/
 pip install uwsgi
 python manage.py collectstatic
-python manage.py makemigrations
-python manage.py migrate
 
 # Restart nginx
 sudo /etc/init.d/nginx start || sudo /etc/init.d/nginx start
