@@ -63,7 +63,18 @@
       testingCode: "!wrh admin connect",
       }
       },
+      mounted(){
+        if (this.WRHDiscordServers.length >=1){
+              this.tabs =1
+          }
+      },
       methods: {
+          openAll(){
+            for (let i = 0; i < this.WRHDiscordServers.length; i += 1) {
+                const item = this.WRHDiscordServers[i];
+                this.$set(this.$refs.dTable.expanded, item.id, true);
+            }
+          },
         getCookie(name) {
         if (!document.cookie) {
             return null;
@@ -89,6 +100,8 @@
                     body: JSON.stringify({
                         "team_id": i.team_id,
                         "team_result_channel": i.team_result_channel,
+                        "results": i.results,
+                        "filters": {'data': i.resultstemp},
                     })
                 })
                 .then(response => {

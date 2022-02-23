@@ -31,8 +31,8 @@
                                     How To Register ?
                                 </v-tab>
                                 <v-tab>
-                                    <v-icon left  color="primary">mdi-discord</v-icon>
-                                     Discords Servers
+                                    <v-icon left color="primary">mdi-discord</v-icon>
+                                    Connected Servers ({WRHDiscordServers.length})
                                 </v-tab>
                                 <!-- <v-tab>
                                     <v-icon left  color="primary">mdi-cog-box</v-icon>
@@ -45,15 +45,17 @@
                                     <v-card flat>
                                         <v-card-text>
                                             <ol>
-                                                <li>Authorize the bot <v-icon  color="primary">mdi-discord</v-icon> <a target="__blank__" :href="BotLink">Authorize</a>
+                                                <li>Authorize the bot <v-icon color="primary">mdi-discord</v-icon> <a
+                                                        target="__blank__" :href="BotLink">Authorize</a>
                                                 </li>
                                                 <li>
-                                                    Run this bot command in a connected discord server(be sure you have administrator role):
+                                                    Run this bot command in a connected discord server(be sure you have
+                                                    administrator role):
                                                     <v-text-field readonly :value="testingCode"></v-text-field>
                                                     <!-- <v-btn @click="copyTestingCode" color="primary" small>Copy</v-btn> -->
-                                                    
-                                                </li>  
-                                            </li>
+
+                                                </li>
+                                                </li>
                                             </ol>
                                         </v-card-text>
                                     </v-card>
@@ -61,22 +63,88 @@
                                 <v-tab-item>
                                     <v-card flat>
                                         <v-card-text>
-                                          <v-data-table
-                                            :headers="
+                                            <v-data-table ref="dTable" :headers="
                                             [
                                             {'text': 'Server Name', 'value':'guild_name'},
                                             {'text': 'Team ID', 'value':'team_id'},
-                                            {'text': 'Team Result Channel', 'value':'team_result_channel'},
-                                            ]"
-                                            :items="WRHDiscordServers"
-                                            >
-                                            <template v-slot:item.team_id="{ item }">
-                                                <v-text-field label="Team ID" dense v-model="item.team_id" hide-details></v-text-field>
-                                              </template>
-                                              <template v-slot:item.team_result_channel="{ item }">
-                                                <v-text-field label="Team Result Channel Name" dense v-model="item.team_result_channel" hide-details></v-text-field>
-                                              </template>
+                                            {'text': 'Results Config', 'value':'results'},
+                                            ]" show-expand @click:row="(item, slot) => slot.expand(!slot.isExpanded)"
+                                                :items="WRHDiscordServers">
+                                                <template v-slot:item.team_id="{ item }">
+                                                    <v-text-field dense v-model="item.team_id" hide-details>
+                                                    </v-text-field>
+                                                </template>
+                                                <template v-slot:item.team_result_channel="{ item }">
+                                                    <v-text-field label="Team Result Channel Name" dense
+                                                        v-model="item.team_result_channel" hide-details></v-text-field>
+                                                </template>
+                                                <template v-slot:item.results="{ item , isExpanded, expand}">
+                                                    <v-checkbox @click="expand(true)" v-model="item.results"
+                                                        hide-details></v-checkbox>
+                                                </template>
+                                                <template v-slot:expanded-item="{ headers, item }">
+                                                    <td v-if="item.results" :colspan="headers.length">
+                                                        <v-data-table :items="item.resultstemp" :headers="[
+                                                        {'text': 'Channel Name', value: 'channel_name'},
+                                                        {'text': 'Category', value: 'category'},
+                                                        {'text': 'Type', value: 'type'},
+                                                        {'text': 'Event Title Filter', value: 'title_filter'},
+                                                        ]">
+                                                            <template v-slot:top>
+                                                                <v-toolbar dense flat>
+                                                                    <v-spacer></v-spacer>
+                                                                    <v-btn small @click="item.resultstemp.push({})"
+                                                                        color="primary" dark class="mb-2">
+                                                                        <v-icon small>mdi-plus</v-icon> Add Channel
+                                                                    </v-btn>
+                                                                </v-toolbar>
+                                                            </template>
+                                                            <template v-slot:item.channel_name="{ item }">
+                                                                <v-text-field  dense
+                                                                    v-model="item.channel_name" hide-details></v-text-field>
+                                                            </template>
+                                                            <template v-slot:item.title_filter="{ item }">
+                                                                <v-text-field  dense
+                                                                    v-model="item.title_filter" hide-details></v-text-field>
+                                                            </template>
+                                                            <template v-slot:item.category="{ item }">
+                                                                <v-select 
+                                                                label="Blank As All"
+                                                                multiple
+                                                                chips
+                                                                :items="[
+                                                                'A',
+                                                                'B',
+                                                                'C',
+                                                                'D',
+                                                                'E'
+                                                                ]"
+                                                                 dense
+                                                                    v-model="item.category" hide-details></v-select>
+                                                            </template>
+                                                            <template v-slot:item.type="{ item }">
+                                                                <v-select
+                                                                label="Blank As All"
+
+                                                                multiple
+                                                                chips
+                                                                :items="[
+                                                                'Races',
+                                                                'TTT',
+                                                                'Riders',
+                                                                'Womens Workputs',
+                                                                'Run'
+                                                                ]"
+                                                                 dense
+                                                                    v-model="item.type" hide-details></v-select>
+                                                            </template>
+
+
+                                                        </v-data-table>
+                                                    </td>
+                                                </template>
                                             </v-data-table>
+
                                         </v-card-text>
                                         <v-card-actions>
                                             <v-spacer></v-spacer>

@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+from django.db.models import JSONField
 
 
 class WRHDiscordMap(models.Model):
@@ -30,7 +31,9 @@ class WRHDiscordServers(models.Model):
     guild_id = models.CharField(max_length=20)  # Discord Guild ID
     guild_name = models.CharField(max_length=50)  # Discord server name
     team_id = models.CharField(max_length=20)  # Team Id for the discord server
-    team_result_channel = models.CharField(max_length=200)  # All result goes to this channel
+    results = models.BooleanField()
+    filters = JSONField()
+    # team_result_channel = models.CharField(max_length=200)  # All result goes to this channel
 
 # class ConfigManager(models.Model):
 #     """

@@ -11,6 +11,13 @@ from wrh_bot.settings import BotLink
 
 
 class WRHDiscordServersSerailizers(serializers.ModelSerializer):
+    resultstemp = serializers.SerializerMethodField()
+
+    def get_resultstemp(self, value):
+        if value.filters.get('data', None):
+            return value.filters.get('data', None)
+        else:
+            return []
     class Meta:
         model = WRHDiscordServers
         fields = '__all__'
@@ -20,7 +27,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        print([dict(i) for i in WRHDiscordServersSerailizers(WRHDiscordServers.objects.all(), many=True).data])
         context['WRHDiscordServers'] = [dict(i) for i in WRHDiscordServersSerailizers(WRHDiscordServers.objects.all(), many=True).data]
         context['BotLink'] = BotLink
         return context

@@ -85,36 +85,49 @@ class RaceResultCog(commands.Cog):
                              r['category'], r['player_id'], embed.description)
             await channel.send(msg, embed=embed)
 
-    async def __send_team_result_by_advanced_filters(self, new_results, guild, advanced_filters, team_id=None):
+    async def __send_team_result_by_advanced_filters(self, new_results, guild, advanced_filters, team_id=None,server=None):
+        print('new_results',new_results)
         if not new_results:
             self.logger.info(f'Advanced filter: No new Result on team_id "{team_id}"!')
             return
         for cfg in (advanced_filters or []):
-            channel_name = cfg.get('channel')
+            channel_name = str(cfg.get('channel_name')).replace(' ', '-')
             channel = channel_name and discord.utils.get(guild.channels, name=channel_name)
+            self.logger.info(f'Channel {channel} Not found in {guild.channels}')
             if not channel:
+                category = discord.utils.get(guild.categories, name='Text Channels')
+                await guild.create_text_channel(channel_name, category=category)
                 self.logger.warning(f'Advanced filter: Invalid channel "{channel_name}" on guild "{guild}"')
-                return
+            channel = channel_name and discord.utils.get(guild.channels, name=channel_name)
             self.logger.info(f'Advanced filter: Try to send messages to: guild={guild} channel={channel_name}')
             category = cfg.get('category')
-            event_pattern = cfg.get('event_pattern')
+            event_type = cfg.get('type', [])
+            event_pattern = cfg.get('title_filter')
             results = []
             zwids = [r['player_id'] for r in new_results]
             discord_players = {
                 r.zwift_id: r for r in await sync_to_async(list)(
                     WRHDiscordMap.objects.filter(zwift_id__in=zwids, guild_id=guild.id))
             }
+            event_map = {
+                'Races': 'TYPE_RACE'
+            }
             for r in new_results:
                 cat = r['category']
-                if category and ((cat or '').lower() != (category or '').lower()):
-                    continue
+                f_t = r['f_t']
+                if len(category) >=1:
+                    if category and ((cat or '').lower() not in [i.lower() for i in category]):
+                        continue
+                if len(event_type) >=1:
+                    if (str(f_t).strip().lower() not in [event_map.get(i).lower() for i in event_type]):
+                        continue
                 event_name = unescape(r['event_name'])
                 if event_pattern and (not re.search(event_pattern, event_name, re.IGNORECASE)):
                     continue
                 msg, embed = self._result_response(r, discord_players=discord_players)
 
-                self.logger.info("Advanced filter: Sending message[category=%s, player_id=%s]: %s",
-                                 cat, r['player_id'], embed.description)
+                self.logger.info("Advanced filter: Sending message[category=%s,Race Type =%s, player_id=%s]: %s",
+                                 cat, f_t, r['player_id'], embed.description)
                 await channel.send(msg, embed=embed)
 
     async def __get_new_team_result(self, team_id):
@@ -129,6 +142,7 @@ class RaceResultCog(commands.Cog):
                 'name': r.get('name'),
                 'cat': r.get('category'),
                 'flag': r.get('flag'),
+                'f_t': r.get('f_t'),
                 'ts': (events.get(r['zid']) or {}).get('date'),
                 'pos': r.get('pos')
             }
@@ -144,10 +158,10 @@ class RaceResultCog(commands.Cog):
                 timestamp = player.pop('ts')
                 category = player.pop('cat')
                 flag = player.pop('flag')
+                f_t = player.pop('f_t')
                 event_date = datetime.datetime.fromtimestamp(timestamp).date()
-                # print(event_id, player_id, player_name , event_date, today)
+                print(event_id, player_id, player_name , event_date, today)
                 if (not last_db_records) or (event_date != today):
-                    # print('continue')
                     continue
                 if (last_db_records.get(event_id) or {}).get(player_id) != player:
                     new_results.append({
@@ -156,10 +170,11 @@ class RaceResultCog(commands.Cog):
                         'player_name': player_name,
                         'datetime': event_date,
                         'category': category,
+                        'f_t': f_t,
                         'flag': flag,
                         'event_name': (events.get(event_id) or {}).get('title'),
                         **player
-                    })
+                        })
                 else:
                     print("Else block")
         return new_results, cleaned_records
@@ -202,7 +217,7 @@ class RaceResultCog(commands.Cog):
             await guild.create_voice_channel(f'Category {team_cat} Size: {cat_size}', overwrites=overwrites,
                                              category=category)
 
-    @tasks.loop(hours=12)
+    @tasks.loop(minutes=2)
     async def show_team_results(self):
         await self.bot.wait_until_ready()
         close_old_connections()
@@ -246,13 +261,13 @@ class RaceResultCog(commands.Cog):
                     teams_results_cache[team_id] = new_results
                     await sync_to_async(ZwiftTeamResult.objects.create)(zwift_team_id=team_id, data=records)
 
-                channel_name = server.team_result_channel
-                if channel_name:
-                    await self.__send_new_team_result(new_results, guild, channel_name, team_id=team_id)
-                # advanced_filters = config.get('discord_bot_team_results_advanced_filters')
-                # if advanced_filters:
-                #     await self.__send_team_result_by_advanced_filters(new_results, guild, advanced_filters,
-                #                                                       team_id=team_id)
+                # channel_name = 'Team Result'
+                # if channel_name:
+                #     await self.__send_new_team_result(new_results, guild, channel_name, team_id=team_id)
+                advanced_filters = server.filters.get('data')
+                if advanced_filters:
+                    await self.__send_team_result_by_advanced_filters(new_results, guild, advanced_filters,
+                                                                      team_id=team_id, server=server)
             except Exception:
                 self.logger.exception('unexpected error!')
                 await asyncio.sleep(self.DISCORD_SLEEP_LOOP)
