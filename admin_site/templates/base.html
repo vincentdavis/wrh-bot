@@ -49,6 +49,9 @@
       vuetify: new Vuetify(),
       data(){
       return{
+      confirmdialog:  false,
+      delete_item: null,
+      delete_actual_item: null,
       WRHDiscordServers:WRHDiscordServers,
       BotLink:BotLink,
       text: 'ad',
@@ -69,6 +72,17 @@
           }
       },
       methods: {
+          deleteItem(){
+              console.log(this.delete_item)
+              for (var i of this.WRHDiscordServers){
+                  if (i.team_id == this.delete_item.team_id){
+                    i.resultstemp = i.resultstemp.filter(obj => {return obj.channel_name != this.delete_item.channel_name})
+                  }
+                
+              }
+              this.confirmdialog = false
+            //   console.log(this.WRHDiscordServers.resultstemp.filter(obj => {return obj.channel_name == this.deleteItem.channel_name}))
+          },
           openAll(){
             for (let i = 0; i < this.WRHDiscordServers.length; i += 1) {
                 const item = this.WRHDiscordServers[i];

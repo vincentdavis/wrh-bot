@@ -15,7 +15,10 @@ class WRHDiscordServersSerailizers(serializers.ModelSerializer):
 
     def get_resultstemp(self, value):
         if value.filters.get('data', None):
-            return value.filters.get('data', None)
+            temp = value.filters.get('data', None)
+            for i in value.filters.get('data', None):
+                i['team_id'] = value.team_id
+            return temp
         else:
             return []
     class Meta:
