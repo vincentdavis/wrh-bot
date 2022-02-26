@@ -33,7 +33,7 @@ class WhoisCog(commands.Cog, name='We Race Here player commands'):
         guild_id = ctx.guild.id
         guild_name = ctx.message.guild.name
         print(guild_id)
-        obj, _ = await sync_to_async(WRHDiscordServers.objects.update_or_create)(guild_id=guild_id,guild_name=guild_name, results=False)
+        obj, _ = await sync_to_async(WRHDiscordServers.objects.update_or_create)(guild_id=guild_id,guild_name=guild_name, results=False, filters={})
         desc = f'**{guild_name}** connected to  discordbots.weracehere.org.'
         embed = discord.Embed(description=desc)
 
